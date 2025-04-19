@@ -2,47 +2,62 @@
 
 A command-line AI aegnt that uses natural language to perform system tasks.
 
-## Features
-- Natural language command interpretation
-- System settings manipulation (e.g., "turn on screensaver")
-- Interactive option selection for complex tasks
-- Support for various system commands:
-  - Screensaver control with style options
-  - Volume control
-  - Brightness control
-  - WiFi management
+## What is this?
 
-## Installation
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/cmd-aegnt.git
-cd cmd-aegnt
+This is a simple tool that lets you control your computer settings using plain English commands. For example, instead of navigating through system menus to change your screensaver, you can simply type:
 
-# Install dependencies
-pip install -r requirements.txt
-
-# Make the command executable and accessible
-chmod +x ae
-sudo ln -s /path/to/cmd-aegnt/ae /usr/local/bin/ae
 ```
-
-## Usage
-```bash
 ae turn the screensaver back on
-ae increase the volume by 10%
-ae set brightness to 50%
-ae turn off wifi
 ```
 
-## Supported Commands
+And the tool will guide you through the process with easy-to-follow prompts.
 
-### Screensaver
-- `ae turn on screensaver` (interactive mode with options)
-- `ae turn off screensaver`
-- `ae set screensaver timeout to 5 minutes`
+## One-Step Installation
 
-#### Interactive Screensaver Options
-When you run `ae turn on screensaver`, the tool will present you with options:
+Copy and paste this single command into your terminal to install everything automatically:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/aegntic/cmd-aegnt/main/install.sh)"
+```
+
+This will:
+- Download all necessary files
+- Install any dependencies
+- Set up the `ae` command for you
+- Create the required `dsktp-cmd-aegnt` link
+- Verify everything is working
+
+After installation, you can immediately start using the `ae` command from anywhere.
+
+## Usage Examples
+
+```bash
+# Control your screensaver
+ae turn the screensaver back on
+ae turn off screensaver
+ae set screensaver timeout to 10 minutes
+
+# Adjust volume
+ae increase the volume
+ae decrease volume
+ae set volume to 70%
+ae mute volume
+
+# Control screen brightness
+ae increase brightness
+ae decrease brightness 
+ae set brightness to 80%
+
+# Manage WiFi
+ae turn on wifi
+ae turn off wifi
+ae connect to "My WiFi Network"
+```
+
+## Screensaver Options
+
+When you run `ae turn on screensaver`, you'll see options like:
+
 ```
 Sure, I'll help you turn on the screensaver. Do you prefer:
 Option a) [Default Ubuntu Screensaver]
@@ -51,72 +66,18 @@ Option c) [Fuji San]
 Option d) [Custom Message]
 ```
 
-If you select option d (Custom Message), it will prompt you to enter your custom message.
-Then it will ask for the timeout in minutes before starting the screensaver.
+Select an option, set your timeout, and you're done!
 
-### Volume
-- `ae increase volume`
-- `ae decrease volume`
-- `ae mute volume`
-- `ae unmute volume`
-- `ae set volume to 70%`
+## Manual Installation (if one-step method doesn't work)
 
-### Brightness
-- `ae increase brightness`
-- `ae decrease brightness` 
-- `ae set brightness to 80%`
-
-### WiFi
-- `ae turn on wifi`
-- `ae turn off wifi`
-- `ae connect to "My WiFi Network"`
-
-## Project Summary
-
-Here's a summary of what we've built:
-
-1. A command-line tool called "ae" that interprets natural language commands
-2. System task automation with support for:
-   * Screensaver control with interactive style selection
-   * Volume management
-   * Brightness settings
-   * WiFi control
-
-The implementation:
-* Uses Python's standard libraries
-* Parses natural language into intents
-* Maps intents to system commands
-* Provides interactive option selection for complex tasks
-* Executes the appropriate actions
-* Provides user-friendly feedback
-
-### How to Use
-
-You can use the "ae" command like this:
+If the automatic installation doesn't work for some reason, you can install manually:
 
 ```bash
+# 1. Download the code
+git clone https://github.com/aegntic/cmd-aegnt.git
+
+# 2. Run the install script
 cd cmd-aegnt
-./ae turn the screensaver back on
-./ae increase volume
-./ae set brightness to 70%
-./ae turn off wifi
+chmod +x install.sh
+./install.sh
 ```
-
-For system-wide access, you can create a symbolic link:
-
-```bash
-sudo ln -s /path/to/cmd-aegnt/ae /usr/local/bin/ae
-```
-
-### Future Enhancements
-
-1. Integration with AI services for more complex natural language understanding
-2. Support for more system settings and applications
-3. Support for multi-step commands
-4. A configuration file for customizing commands
-5. System-specific adaptations for different desktop environments
-6. More interactive dialogs for other features
-
-## Requirements
-- Python 3.6+
-- Linux/Unix-based system with GNOME desktop environment (for some features)
