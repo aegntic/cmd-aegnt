@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-cmd-aegnt - A command-line AI agent for system tasks
+cmd-aegnt - A command-line AI aegnt for system tasks
 """
 
 import sys
@@ -84,7 +84,7 @@ ACTION_MESSAGES = {
 
 def parse_args():
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(description="AI agent for system tasks")
+    parser = argparse.ArgumentParser(description="AI aegnt for system tasks")
     parser.add_argument("command", nargs="+", help="The natural language command to execute")
     return parser.parse_args()
 
@@ -163,11 +163,11 @@ def execute_system_command(command):
         print(f"Error executing command: {str(e)}")
         return False
 
-def set_screensaver_timeout_via_desktop_commander(minutes):
-    """Set screensaver timeout using desktop-commander."""
+def set_screensaver_timeout_via_dsktp_cmd_aegnt(minutes):
+    """Set screensaver timeout using dsktp-cmd-aegnt."""
     try:
-        cmd = f"desktop-commander --text \"set screensaver timeout to {minutes} minutes\""
-        print(f"Using desktop-commander to set screensaver timeout: {cmd}")
+        cmd = f"dsktp-cmd-aegnt --text \"set screensaver timeout to {minutes} minutes\""
+        print(f"Using dsktp-cmd-aegnt to set screensaver timeout: {cmd}")
         
         # Start the process
         process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -175,12 +175,12 @@ def set_screensaver_timeout_via_desktop_commander(minutes):
         # Give it some time to work
         time.sleep(5)
         
-        # Terminate the process (desktop-commander doesn't exit automatically)
+        # Terminate the process (dsktp-cmd-aegnt doesn't exit automatically)
         process.terminate()
         
         return True
     except Exception as e:
-        print(f"Error executing desktop-commander: {str(e)}")
+        print(f"Error executing dsktp-cmd-aegnt: {str(e)}")
         return False
 
 def handle_interactive_screensaver():
@@ -240,10 +240,10 @@ def handle_interactive_screensaver():
             success = False
             break
     
-    # Set timeout using desktop-commander
-    print(f"Setting screensaver timeout to {timeout_mins} minutes using desktop-commander")
-    if not set_screensaver_timeout_via_desktop_commander(timeout_mins):
-        print("Warning: Failed to set timeout via desktop-commander. The screensaver will still work, but might not use your timeout setting.")
+    # Set timeout using dsktp-cmd-aegnt
+    print(f"Setting screensaver timeout to {timeout_mins} minutes using dsktp-cmd-aegnt")
+    if not set_screensaver_timeout_via_dsktp_cmd_aegnt(timeout_mins):
+        print("Warning: Failed to set timeout via dsktp-cmd-aegnt. The screensaver will still work, but might not use your timeout setting.")
         # Try the direct method as a fallback
         print(f"Attempting fallback method for timeout...")
         execute_system_command(f"gsettings set org.gnome.desktop.session idle-delay {timeout_mins * 60}")
@@ -292,8 +292,8 @@ def main():
     # Special case for screensaver timeout
     if category == "screensaver" and action == "set timeout" and param:
         mins = int(param)
-        print(f"Setting screensaver timeout to {mins} minutes via desktop-commander")
-        success = set_screensaver_timeout_via_desktop_commander(mins)
+        print(f"Setting screensaver timeout to {mins} minutes via dsktp-cmd-aegnt")
+        success = set_screensaver_timeout_via_dsktp_cmd_aegnt(mins)
         
         # Also set the lock-delay as a fallback
         print(f"Setting lock-delay to {mins * 60} seconds")

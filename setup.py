@@ -8,7 +8,7 @@ setup(
     install_requires=[],  # No external dependencies for basic functionality
     author="AI Assistant",
     author_email="example@example.com",
-    description="A command-line AI agent for system tasks",
+    description="A command-line AI aegnt for system tasks",
     keywords="ai, command-line, automation, system-settings",
     url="https://github.com/yourusername/cmd-aegnt",
     classifiers=[

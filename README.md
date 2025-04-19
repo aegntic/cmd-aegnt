@@ -1,6 +1,6 @@
 # cmd-aegnt
 
-A command-line AI agent that uses natural language to perform system tasks.
+A command-line AI aegnt that uses natural language to perform system tasks.
 
 ## Features
 - Natural language command interpretation
