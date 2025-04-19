@@ -5,8 +5,9 @@ A command-line AI agent that uses natural language to perform system tasks.
 ## Features
 - Natural language command interpretation
 - System settings manipulation (e.g., "turn on screensaver")
+- Interactive option selection for complex tasks
 - Support for various system commands:
-  - Screensaver control
+  - Screensaver control with style options
   - Volume control
   - Brightness control
   - WiFi management
@@ -22,7 +23,7 @@ pip install -r requirements.txt
 
 # Make the command executable and accessible
 chmod +x ae
-sudo ln -s $(pwd)/ae /usr/local/bin/ae
+sudo ln -s /path/to/cmd-aegnt/ae /usr/local/bin/ae
 ```
 
 ## Usage
@@ -36,9 +37,22 @@ ae turn off wifi
 ## Supported Commands
 
 ### Screensaver
-- `ae turn on screensaver`
+- `ae turn on screensaver` (interactive mode with options)
 - `ae turn off screensaver`
 - `ae set screensaver timeout to 5 minutes`
+
+#### Interactive Screensaver Options
+When you run `ae turn on screensaver`, the tool will present you with options:
+```
+Sure, I'll help you turn on the screensaver. Do you prefer:
+Option a) [Default Ubuntu Screensaver]
+Option b) [Numbat Wallpaper]
+Option c) [Fuji San]
+Option d) [Custom Message]
+```
+
+If you select option d (Custom Message), it will prompt you to enter your custom message.
+Then it will ask for the timeout in minutes before starting the screensaver.
 
 ### Volume
 - `ae increase volume`
@@ -63,7 +77,7 @@ Here's a summary of what we've built:
 
 1. A command-line tool called "ae" that interprets natural language commands
 2. System task automation with support for:
-   * Screensaver control
+   * Screensaver control with interactive style selection
    * Volume management
    * Brightness settings
    * WiFi control
@@ -72,6 +86,7 @@ The implementation:
 * Uses Python's standard libraries
 * Parses natural language into intents
 * Maps intents to system commands
+* Provides interactive option selection for complex tasks
 * Executes the appropriate actions
 * Provides user-friendly feedback
 
@@ -100,6 +115,7 @@ sudo ln -s /path/to/cmd-aegnt/ae /usr/local/bin/ae
 3. Support for multi-step commands
 4. A configuration file for customizing commands
 5. System-specific adaptations for different desktop environments
+6. More interactive dialogs for other features
 
 ## Requirements
 - Python 3.6+

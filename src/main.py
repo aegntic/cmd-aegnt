@@ -17,7 +17,10 @@ COMMAND_MAPPINGS = {
         "turn off": "gsettings set org.gnome.desktop.screensaver idle-activation-enabled false",
         "enable": "gsettings set org.gnome.desktop.screensaver idle-activation-enabled true",
         "disable": "gsettings set org.gnome.desktop.screensaver idle-activation-enabled false",
-        "set timeout": lambda mins: f"gsettings set org.gnome.desktop.screensaver lock-delay {int(mins) * 60}"
+        "set timeout": lambda mins: f"gsettings set org.gnome.desktop.screensaver lock-delay {int(mins) * 60}",
+        "set style": lambda style: f"gsettings set org.gnome.desktop.screensaver picture-uri '{style}'",
+        "enable message": "gsettings set org.gnome.desktop.screensaver status-message-enabled true",
+        "disable message": "gsettings set org.gnome.desktop.screensaver status-message-enabled false"
     },
     "volume": {
         "increase": "amixer -D pulse sset Master 5%+",
@@ -37,6 +40,27 @@ COMMAND_MAPPINGS = {
         "enable": "nmcli radio wifi on",
         "disable": "nmcli radio wifi off",
         "connect": lambda ssid: f"nmcli device wifi connect '{ssid}'"
+    }
+}
+
+# Screensaver styles
+SCREENSAVER_STYLES = {
+    'a': {
+        'name': 'Default Ubuntu Screensaver',
+        'uri': 'file:///usr/share/backgrounds/ubuntu-wallpaper-d.png'
+    },
+    'b': {
+        'name': 'Numbat Wallpaper',
+        'uri': 'file:///usr/share/backgrounds/Numbat_wallpaper_dimmed_3480x2160.png'
+    },
+    'c': {
+        'name': 'Fuji San',
+        'uri': 'file:///usr/share/backgrounds/Fuji_san_by_amaral.png'
+    },
+    'd': {
+        'name': 'Custom Message',
+        'uri': 'file:///usr/share/backgrounds/ubuntu-wallpaper-d.png',
+        'custom_message': True
     }
 }
 
@@ -136,6 +160,70 @@ def execute_system_command(command):
         print(f"Error executing command: {str(e)}")
         return False
 
+def handle_interactive_screensaver():
+    """Handle interactive screensaver settings."""
+    print("Sure, I'll help you turn on the screensaver. Do you prefer:")
+    
+    # Display options
+    for key, style in SCREENSAVER_STYLES.items():
+        print(f"Option {key}) [{style['name']}]")
+    
+    # Get user choice
+    choice = input("Enter your choice (a/b/c/d): ").lower()
+    
+    # Validate choice
+    while choice not in SCREENSAVER_STYLES:
+        choice = input("Invalid choice. Please enter a, b, c, or d: ").lower()
+    
+    selected_style = SCREENSAVER_STYLES[choice]
+    print(f"You selected: {selected_style['name']}")
+    
+    # Get custom message if needed
+    custom_message = None
+    if 'custom_message' in selected_style and selected_style['custom_message']:
+        custom_message = input("Please enter your custom message: ")
+        print(f"Custom message set to: {custom_message}")
+    
+    # Get timeout
+    timeout_mins = input("Enter timeout in minutes before starting screensaver: ")
+    while not timeout_mins.isdigit() or int(timeout_mins) < 1:
+        timeout_mins = input("Please enter a valid number of minutes (must be at least 1): ")
+    
+    timeout_mins = int(timeout_mins)
+    print(f"Screensaver will start after {timeout_mins} minutes of inactivity")
+    
+    # Apply settings
+    commands = [
+        # Enable screensaver
+        "gsettings set org.gnome.desktop.screensaver idle-activation-enabled true",
+        # Set timeout
+        f"gsettings set org.gnome.desktop.screensaver lock-delay {timeout_mins * 60}",
+        # Set style/background
+        f"gsettings set org.gnome.desktop.screensaver picture-uri '{selected_style['uri']}'"
+    ]
+    
+    # Handle custom message if applicable
+    if custom_message:
+        commands.append("gsettings set org.gnome.desktop.screensaver status-message-enabled true")
+        # Note: GNOME doesn't provide a direct way to set the custom message content
+        # This is usually done via the GUI. We just enable the status message option.
+        print("Note: Custom message is enabled, but you'll need to set the message content via the GNOME screensaver settings.")
+    
+    # Execute commands
+    success = True
+    for cmd in commands:
+        print(f"Executing: {cmd}")
+        if not execute_system_command(cmd):
+            success = False
+            break
+    
+    if success:
+        print(f"Successfully configured screensaver with {selected_style['name']} and {timeout_mins} minute timeout.")
+    else:
+        print("Failed to configure screensaver completely.")
+    
+    return success
+
 def main():
     """Main entry point."""
     args = parse_args()
@@ -154,6 +242,10 @@ def main():
     
     category, action, param = intent
     print(f"Recognized intent: {category} - {action}" + (f" - {param}" if param else ""))
+    
+    # Special case for interactive screensaver setup
+    if category == "screensaver" and action == "turn on":
+        return handle_interactive_screensaver()
     
     # Get the system command to execute
     if category in COMMAND_MAPPINGS and action in COMMAND_MAPPINGS[category]:
