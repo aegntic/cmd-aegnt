@@ -57,6 +57,50 @@ ae turn off wifi
 - `ae turn off wifi`
 - `ae connect to "My WiFi Network"`
 
+## Project Summary
+
+Here's a summary of what we've built:
+
+1. A command-line tool called "ae" that interprets natural language commands
+2. System task automation with support for:
+   * Screensaver control
+   * Volume management
+   * Brightness settings
+   * WiFi control
+
+The implementation:
+* Uses Python's standard libraries
+* Parses natural language into intents
+* Maps intents to system commands
+* Executes the appropriate actions
+* Provides user-friendly feedback
+
+### How to Use
+
+You can use the "ae" command like this:
+
+```bash
+cd cmd-aegnt
+./ae turn the screensaver back on
+./ae increase volume
+./ae set brightness to 70%
+./ae turn off wifi
+```
+
+For system-wide access, you can create a symbolic link:
+
+```bash
+sudo ln -s /path/to/cmd-aegnt/ae /usr/local/bin/ae
+```
+
+### Future Enhancements
+
+1. Integration with AI services for more complex natural language understanding
+2. Support for more system settings and applications
+3. Support for multi-step commands
+4. A configuration file for customizing commands
+5. System-specific adaptations for different desktop environments
+
 ## Requirements
 - Python 3.6+
 - Linux/Unix-based system with GNOME desktop environment (for some features)
