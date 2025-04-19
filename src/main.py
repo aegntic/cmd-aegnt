@@ -9,6 +9,7 @@ import subprocess
 import argparse
 import json
 import re
+import time
 
 # Dictionary mapping natural language commands to system actions
 COMMAND_MAPPINGS = {
@@ -17,7 +18,9 @@ COMMAND_MAPPINGS = {
         "turn off": "gsettings set org.gnome.desktop.screensaver idle-activation-enabled false",
         "enable": "gsettings set org.gnome.desktop.screensaver idle-activation-enabled true",
         "disable": "gsettings set org.gnome.desktop.screensaver idle-activation-enabled false",
-        "set timeout": lambda mins: f"gsettings set org.gnome.desktop.screensaver lock-delay {int(mins) * 60}",
+        "set timeout": lambda mins: [
+            f"gsettings set org.gnome.desktop.screensaver lock-delay {int(mins) * 60}"
+        ],
         "set style": lambda style: f"gsettings set org.gnome.desktop.screensaver picture-uri '{style}'",
         "enable message": "gsettings set org.gnome.desktop.screensaver status-message-enabled true",
         "disable message": "gsettings set org.gnome.desktop.screensaver status-message-enabled false"
@@ -160,6 +163,26 @@ def execute_system_command(command):
         print(f"Error executing command: {str(e)}")
         return False
 
+def set_screensaver_timeout_via_desktop_commander(minutes):
+    """Set screensaver timeout using desktop-commander."""
+    try:
+        cmd = f"desktop-commander --text \"set screensaver timeout to {minutes} minutes\""
+        print(f"Using desktop-commander to set screensaver timeout: {cmd}")
+        
+        # Start the process
+        process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        
+        # Give it some time to work
+        time.sleep(5)
+        
+        # Terminate the process (desktop-commander doesn't exit automatically)
+        process.terminate()
+        
+        return True
+    except Exception as e:
+        print(f"Error executing desktop-commander: {str(e)}")
+        return False
+
 def handle_interactive_screensaver():
     """Handle interactive screensaver settings."""
     print("Sure, I'll help you turn on the screensaver. Do you prefer:")
@@ -196,8 +219,8 @@ def handle_interactive_screensaver():
     commands = [
         # Enable screensaver
         "gsettings set org.gnome.desktop.screensaver idle-activation-enabled true",
-        # Set timeout
-        f"gsettings set org.gnome.desktop.screensaver lock-delay {timeout_mins * 60}",
+        # Set lock delay (if lock is enabled)
+        f"gsettings set org.gnome.desktop.screensaver lock-delay 0",
         # Set style/background
         f"gsettings set org.gnome.desktop.screensaver picture-uri '{selected_style['uri']}'"
     ]
@@ -217,12 +240,35 @@ def handle_interactive_screensaver():
             success = False
             break
     
+    # Set timeout using desktop-commander
+    print(f"Setting screensaver timeout to {timeout_mins} minutes using desktop-commander")
+    if not set_screensaver_timeout_via_desktop_commander(timeout_mins):
+        print("Warning: Failed to set timeout via desktop-commander. The screensaver will still work, but might not use your timeout setting.")
+        # Try the direct method as a fallback
+        print(f"Attempting fallback method for timeout...")
+        execute_system_command(f"gsettings set org.gnome.desktop.session idle-delay {timeout_mins * 60}")
+    
     if success:
         print(f"Successfully configured screensaver with {selected_style['name']} and {timeout_mins} minute timeout.")
     else:
         print("Failed to configure screensaver completely.")
     
     return success
+
+def execute_multiple_commands(commands):
+    """Execute multiple system commands."""
+    if isinstance(commands, list):
+        success = True
+        for cmd in commands:
+            print(f"Executing: {cmd}")
+            if not execute_system_command(cmd):
+                success = False
+                break
+        return success
+    else:
+        # Single command
+        print(f"Executing: {commands}")
+        return execute_system_command(commands)
 
 def main():
     """Main entry point."""
@@ -243,6 +289,22 @@ def main():
     category, action, param = intent
     print(f"Recognized intent: {category} - {action}" + (f" - {param}" if param else ""))
     
+    # Special case for screensaver timeout
+    if category == "screensaver" and action == "set timeout" and param:
+        mins = int(param)
+        print(f"Setting screensaver timeout to {mins} minutes via desktop-commander")
+        success = set_screensaver_timeout_via_desktop_commander(mins)
+        
+        # Also set the lock-delay as a fallback
+        print(f"Setting lock-delay to {mins * 60} seconds")
+        execute_system_command(f"gsettings set org.gnome.desktop.screensaver lock-delay {mins * 60}")
+        
+        if success:
+            print(f"Successfully set timeout for screensaver to {mins} minutes")
+        else:
+            print(f"Warning: Failed to set screensaver timeout to {mins} minutes")
+        return
+    
     # Special case for interactive screensaver setup
     if category == "screensaver" and action == "turn on":
         return handle_interactive_screensaver()
@@ -258,9 +320,9 @@ def main():
             cmd = cmd_template(param)
         else:
             cmd = cmd_template
-            
-        print(f"Executing: {cmd}")
-        success = execute_system_command(cmd)
+        
+        # Execute the command(s)
+        success = execute_multiple_commands(cmd)
         
         # Get user-friendly action message
         action_msg = ACTION_MESSAGES.get(action, action)
